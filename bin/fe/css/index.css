@@ -1,0 +1,99 @@
+@charset "UTF-8";
+
+.q {
+	float: right;
+}
+ul {
+  list-style: none;
+}
+
+#question-edit {
+	width: 500px;
+	border-radius: 5px;
+	background-color: white;
+	margin: 10px;
+	padding: 5px;
+}
+
+#q-top {
+	background-color: #f1f1f1;
+	padding : 0px 5px;
+	border-radius: 5px;
+}
+.header {
+	font-size: 1.17em;
+	font-weight: bold;
+}
+
+#mis-answers{
+	display: none;
+}
+#message{
+	float: right;
+	border-radius: 5px;
+	padding: 0px 5px;
+}
+
+.error{
+	background-color: #e55050;
+}
+.warning{
+	background-color: #dfda68;
+}
+.confirmation{
+	background-color: #66CDAA;
+}
+
+/* colors */
+#header, #footer {
+	background-color: #f1f1f1;
+}
+
+#main-wrap {
+	background-color: #D9D9D9;
+}
+
+#sidebar {
+	background-color: #d2d2d2;
+}
+
+#content-wrap {
+	background-color: #c5c5c5;
+}
+
+/* sizes */
+#main-wrap>div {
+	min-height: 450px;
+}
+
+#header, #footer {
+	min-height: 40px;
+}
+
+#main-wrap>div {
+	min-height: 450px;
+}
+
+#header, #footer {
+	min-height: 40px;
+}
+
+/* layout */
+#main-wrap {
+	/* overflow to handle inner floating block */
+	overflow: hidden;
+}
+
+#main-wrap > input{
+	width: 100%;
+}
+
+#user-input {
+	float: left;
+	width: 60%;
+}
+
+#server-feed {
+	float: right;
+	width: 40%;
+}
