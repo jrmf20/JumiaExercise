@@ -35,14 +35,14 @@ func init() {
 type PhoneAdd struct {
 	id, number, code int
 	Name, country    string
-	Valid            bool
+	valid            bool
 }
 
 //Populate/Create PhoneAdd "class" given db info
 func CreatePhoneAdd(id int, name string, number string) (p PhoneAdd) {
 	p.id = id
 	p.Name = name
-	p.country, p.code, p.number, p.Valid = numberToInfo(number)
+	p.country, p.code, p.number, p.valid = numberToInfo(number)
 	return
 }
 
@@ -81,13 +81,47 @@ func numberToInfo(n_string string) (country string, code int, number int, valid 
 	return
 }
 
+//Marshal PhoneAddress to JSON
 func (p *PhoneAdd) MarshalJSON() ([]byte, error) {
 	buffer := bytes.NewBufferString("{")
 	buffer.WriteString(fmt.Sprintf("\"id\" : %d,", p.id))
 	buffer.WriteString(fmt.Sprintf("\"name\" : \"%s\",", p.Name))
 	buffer.WriteString(fmt.Sprintf("\"number\" : %d,", p.number))
 	buffer.WriteString(fmt.Sprintf("\"country\" : \"%s\",", p.country))
-	buffer.WriteString(fmt.Sprintf("\"state\" : %t", p.Valid))
+	buffer.WriteString(fmt.Sprintf("\"state\" : %t", p.valid))
 	buffer.WriteString(fmt.Sprintf("}"))
 	return buffer.Bytes(), nil
+}
+
+func (p *PhoneAdd) GetID() int {
+	return p.id
+}
+func (p *PhoneAdd) GetNumber() int {
+	return p.number
+}
+func (p *PhoneAdd) GetCountry() string {
+	return p.country
+}
+func (p *PhoneAdd) GetCountryCode() int {
+	return p.code
+}
+func (p *PhoneAdd) GetValid() bool {
+	return p.valid
+}
+
+//Sets Phone Number
+//Returns error if not valid
+func (p *PhoneAdd) SetPhoneNumber(n string) error {
+	return p.AddAddress(n, "")
+}
+
+//New Address
+//Returns error if not valid
+func (p PhoneAdd) AddAddress(n string, name string) error {
+	p.country, p.code, p.number, p.valid = numberToInfo(n)
+	if p.valid {
+		return nil
+	} else {
+		return fmt.Errorf("Invalid Phone Number")
+	}
 }

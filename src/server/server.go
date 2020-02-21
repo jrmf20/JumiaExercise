@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	_ "fmt"
 	"github.com/gorilla/mux"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
@@ -17,29 +18,29 @@ import (
 
 type Phone_List []phone_add.PhoneAdd
 
-//como fazer uma melhor
-func CustomerHandler(w http.ResponseWriter, r *http.Request) {
+func GetCustomersHandler(w http.ResponseWriter, r *http.Request) {
 	var out []byte
-	switch r.Method {
-	case "GET":
-		p_list := []phone_add.PhoneAdd{}
-		if custlist, err := DAO.GetAllCustomers(); err == nil {
-			for _, cust := range custlist {
-				p_list = append(p_list, phone_add.CreatePhoneAdd(cust.ID, cust.Name, cust.Phone))
-			}
-			out, err = json.Marshal(Phone_List(p_list))
-			if err != nil {
-				log.Println(err)
-			}
-		} else {
-			out = []byte("error:\"Unnexpected Error\"")
+	p_list := []phone_add.PhoneAdd{}
+	if custlist, err := DAO.GetAllCustomers(); err == nil {
+		for _, cust := range custlist {
+			p_list = append(p_list, phone_add.CreatePhoneAdd(cust.ID, cust.Name, cust.Phone))
 		}
-		w.Write(out)
-		break
-		//	case "POST":
-		//		break
-	default:
-		log.Println("Call to CustomerHandler not handled due to unrecognized method")
+		out, err = json.Marshal(Phone_List(p_list))
+		if err != nil {
+			log.Println(err)
+		}
+	} else {
+		out = []byte("error:\"Unnexpected Error\"")
+	}
+	w.Write(out)
+}
+
+func IndexHander(w http.ResponseWriter, r *http.Request) {
+	file, err := ioutil.ReadFile("fe/index.html")
+	if err != nil {
+		log.Fatal("Unnexpected Error Getting File")
+	} else {
+		w.Write(file)
 	}
 }
 
@@ -52,13 +53,15 @@ func main() {
 	r := mux.NewRouter()
 
 	//main path
-	staticFileDirectory := http.Dir("fe/")
-	staticFileHandler := http.StripPrefix("/fe/", http.FileServer(staticFileDirectory))
-	r.PathPrefix("/fe/").Handler(staticFileHandler).Methods("GET")
-
+	//	staticFileDirectory := http.Dir("fe/")
+	//	staticFileHandler := http.StripPrefix("/fe/", http.FileServer(staticFileDirectory))
+	//	r.PathPrefix("/fe/").Handler(staticFileHandler).Methods("GET")
+	r.HandleFunc("/",IndexHander)
 	//scriptpaths
 	r.PathPrefix("/scripts/").Handler(http.StripPrefix("/scripts/", http.FileServer(http.Dir("fe/scripts")))).Methods("GET")
-	r.Path("/customer").HandlerFunc(CustomerHandler)
+	r.PathPrefix("/js/").Handler(http.StripPrefix("/js/", http.FileServer(http.Dir("fe/js")))).Methods("GET")
+	r.PathPrefix("/css/").Handler(http.StripPrefix("/css/", http.FileServer(http.Dir("fe/css")))).Methods("GET")
+	r.Path("/customer").HandlerFunc(GetCustomersHandler).Methods("GET")
 
 	server := &http.Server{Addr: ":80", Handler: r}
 
